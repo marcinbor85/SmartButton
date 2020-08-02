@@ -1,0 +1,14 @@
+#ifndef SMART_BUTTON_DEFS_H
+#define SMART_BUTTON_DEFS_H
+
+#include <Arduino.h>
+
+#define SMART_BUTTON_DEFAULT_DEBOUNCE_TIMEOUT   20UL
+#define SMART_BUTTON_DEFAULT_CLICK_TIMEOUT      500UL
+#define SMART_BUTTON_DEFAULT_HOLD_TIMEOUT       1000UL
+#define SMART_BUTTON_DEFAULT_LONG_HOLD_TIMEOUT  2000UL
+
+#define SMART_BUTTON_MILLIS()                   millis()
+#define SMART_BUTTON_DIGITAL_READ(pin)          digitalRead(pin)
+
+#endif /* SMART_BUTTON_DEFS_H */
