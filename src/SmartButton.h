@@ -29,8 +29,6 @@ public:
     typedef bool (*IsPressedHandler)(SmartButton *button);
     typedef bool (*EventCallback)(SmartButton *button, SmartButton::Event event, int clickCounter);
 
-    SmartButton() = delete;
-
     explicit SmartButton(int pin, SmartButton::InputType inputType);
     explicit SmartButton(SmartButton::IsPressedHandler isPressedHandler);
 
@@ -43,6 +41,10 @@ public:
     static void service();
 
 private:
+    SmartButton() = delete;
+    SmartButton(const SmartButton&) = delete;
+    SmartButton& operator=(const SmartButton&) = delete;
+
     SmartButton(
         int pin,
         SmartButton::InputType inputType,
