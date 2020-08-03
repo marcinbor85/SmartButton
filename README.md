@@ -1,13 +1,15 @@
 # SmartButton Library
 SmartButton Library is used for handling various button events.
 It supports button press, release, multiple click and button hold events.
-Library is implemented in C++ with build-in Arduino port.
+Library is implemented in C++ with build-in Arduino port, but it is easy to
+port to different architecture.
 
 ## Features
 * asynchronous non-blocking API based on events callbacks
 * hardware independent high-level architecture
 * works well with digital, analogs and other signal input backends
 * easy to use with Arduino boards
+* unlimited number of buttons
 * support multi-click events
 * support press and release events
 * support hold and long-hold events
