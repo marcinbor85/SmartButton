@@ -2,23 +2,26 @@
 
 #include <SmartButton.h>
 
-#define BUTTON_PIN      2
-#define LED_PIN         13
+constexpr int BUTTON_PIN = 2;
+constexpr int LED_PIN = 13;
+
+constexpr unsigned long BLINKING_FAST = 100UL;
+constexpr unsigned long BLINKING_SLOW = 500UL;
 
 using namespace smartbutton;
 
 static bool blinking = true;
-static unsigned long blinkingPeriod = 500;
+static unsigned long blinkingPeriod = BLINKING_SLOW;
 
 void eventCallback(SmartButton *button, SmartButton::Event event, int clickCounter)
 {
     if (event == SmartButton::Event::CLICK) {           // Click event handler
         switch (clickCounter) {
         case 1:
-            blinkingPeriod = 100;                       // Single click will turn fast led blinking
+            blinkingPeriod = BLINKING_FAST;             // Single click will turn fast led blinking
             break;
         case 2:
-            blinkingPeriod = 500;                       // Double click will turn slow led blinking
+            blinkingPeriod = BLINKING_SLOW;             // Double click will turn slow led blinking
             break;
         default:
             break;

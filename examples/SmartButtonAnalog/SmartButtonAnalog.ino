@@ -2,8 +2,8 @@
 
 #include <SmartButton.h>
 
-#define BUTTON_PIN      A0
-#define LED_PIN         13
+constexpr int BUTTON_PIN = A0;
+constexpr int LED_PIN = 13;
 
 using namespace smartbutton;
 
