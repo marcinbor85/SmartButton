@@ -3,6 +3,8 @@
 
 #include "SmartButtonDefs.h"
 
+namespace smartbutton {
+
 class SmartButton {
 
 public:
@@ -26,8 +28,8 @@ public:
         NORMAL_LOW
     };
 
-    typedef bool (*IsPressedHandler)(SmartButton *button);
-    typedef bool (*EventCallback)(SmartButton *button, SmartButton::Event event, int clickCounter);
+    using IsPressedHandler = bool (*)(SmartButton *button);
+    using EventCallback = void (*)(SmartButton *button, SmartButton::Event event, int clickCounter);
 
     explicit SmartButton(int pin, SmartButton::InputType inputType);
     explicit SmartButton(SmartButton::IsPressedHandler isPressedHandler);
@@ -71,8 +73,8 @@ private:
     const int pin;
     const SmartButton::InputType inputType;
 
-    unsigned long pressMillis;
-    unsigned long debounceMillis;
+    unsigned long pressTick;
+    unsigned long debounceTick;
 
     bool pressedFlag;
 
@@ -83,5 +85,7 @@ private:
 };
 
 extern SmartButton *_smartButtons;
+
+};
 
 #endif /* SMART_BUTTON_H */

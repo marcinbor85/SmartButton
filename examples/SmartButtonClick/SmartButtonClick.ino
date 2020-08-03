@@ -5,6 +5,8 @@
 #define BUTTON_PIN      2
 #define LED_PIN         13
 
+using namespace smartbutton;
+
 void eventCallback(SmartButton *button, SmartButton::Event event, int clickCounter)
 {
     if (event == SmartButton::Event::CLICK) {   // Click event handler

@@ -3,12 +3,16 @@
 
 #include <Arduino.h>
 
-#define SMART_BUTTON_DEFAULT_DEBOUNCE_TIMEOUT   20UL
-#define SMART_BUTTON_DEFAULT_CLICK_TIMEOUT      500UL
-#define SMART_BUTTON_DEFAULT_HOLD_TIMEOUT       1000UL
-#define SMART_BUTTON_DEFAULT_LONG_HOLD_TIMEOUT  2000UL
+namespace smartbutton {
 
-#define SMART_BUTTON_MILLIS()                   millis()
-#define SMART_BUTTON_DIGITAL_READ(pin)          digitalRead(pin)
+constexpr unsigned long DEFAULT_DEBOUNCE_TIMEOUT = 20UL;
+constexpr unsigned long DEFAULT_CLICK_TIMEOUT = 500UL;
+constexpr unsigned long DEFAULT_HOLD_TIMEOUT = 1000UL;
+constexpr unsigned long DEFAULT_LONG_HOLD_TIMEOUT = 2000UL;
+
+constexpr unsigned long (*getTickValue)() = millis;
+constexpr bool (*getGpioState)(int) = digitalRead;
+
+};
 
 #endif /* SMART_BUTTON_DEFS_H */
