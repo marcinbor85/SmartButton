@@ -8,7 +8,7 @@
 
 using namespace smartbutton;
 
-static bool blinking = false;
+static bool blinking = true;
 static unsigned long blinkingPeriod = 500;
 
 void event1Callback(SmartButton *button, SmartButton::Event event, int clickCounter)
