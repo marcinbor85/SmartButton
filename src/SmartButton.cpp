@@ -8,10 +8,10 @@ SmartButton::SmartButton(
     int pin,
     SmartButton::InputType inputType,
     SmartButton::IsPressedHandler isPressedHandler, 
-    unsigned long debounceTimeout = DEFAULT_DEBOUNCE_TIMEOUT,
-    unsigned long clickTimeout = DEFAULT_CLICK_TIMEOUT,
-    unsigned long holdTimeout = DEFAULT_HOLD_TIMEOUT,
-    unsigned long longHoldTimeout = DEFAULT_LONG_HOLD_TIMEOUT):
+    unsigned long debounceTimeout,
+    unsigned long clickTimeout,
+    unsigned long holdTimeout,
+    unsigned long longHoldTimeout):
         pin(pin),
         inputType(inputType),
         isPressedHandler(isPressedHandler),

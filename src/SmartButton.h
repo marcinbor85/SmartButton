@@ -31,7 +31,7 @@ public:
     using IsPressedHandler = bool (*)(SmartButton *button);
     using EventCallback = void (*)(SmartButton *button, SmartButton::Event event, int clickCounter);
 
-    explicit SmartButton(int pin, SmartButton::InputType inputType);
+    explicit SmartButton(int pin, SmartButton::InputType inputType = SmartButton::InputType::NORMAL_HIGH);
     explicit SmartButton(SmartButton::IsPressedHandler isPressedHandler);
 
     SmartButton::State getState(void);
@@ -51,10 +51,10 @@ private:
         int pin,
         SmartButton::InputType inputType,
         SmartButton::IsPressedHandler isPressedHandler,
-        unsigned long debounceTimeout,
-        unsigned long clickTimeout,
-        unsigned long holdTimeout,
-        unsigned long longHoldTimeout
+        unsigned long debounceTimeout = DEFAULT_DEBOUNCE_TIMEOUT,
+        unsigned long clickTimeout = DEFAULT_CLICK_TIMEOUT,
+        unsigned long holdTimeout = DEFAULT_HOLD_TIMEOUT,
+        unsigned long longHoldTimeout = DEFAULT_LONG_HOLD_TIMEOUT
     );
 
     void process();
