@@ -7,7 +7,9 @@ SmartButton *_smartButtons = NULL;
 SmartButton::SmartButton(
     int pin,
     SmartButton::InputType inputType,
-    SmartButton::IsPressedHandler isPressedHandler, 
+    SmartButton::IsPressedHandler isPressedHandler,
+    bool *isPressedFlag,
+    SmartButtonInterface *interface,
     unsigned long debounceTimeout,
     unsigned long clickTimeout,
     unsigned long holdTimeout,
@@ -15,27 +17,40 @@ SmartButton::SmartButton(
         pin(pin),
         inputType(inputType),
         isPressedHandler(isPressedHandler),
+        isPressedFlag(isPressedFlag),
+        interface(interface),
         debounceTimeout(debounceTimeout),
         clickTimeout(clickTimeout),
         holdTimeout(holdTimeout),
-        longHoldTimeout(longHoldTimeout)
+        longHoldTimeout(longHoldTimeout),
+        eventCallback(NULL)
 {
 
 }
 
-SmartButton::SmartButton(SmartButton::IsPressedHandler isPressed): SmartButton(-1, SmartButton::InputType::NORMAL_HIGH, isPressed)
+SmartButton::SmartButton(SmartButtonInterface *interface): SmartButton(-1, SmartButton::InputType::NORMAL_HIGH, NULL, NULL, interface)
 {
     
 }
 
-SmartButton::SmartButton(int pin, SmartButton::InputType inputType): SmartButton(pin, inputType, NULL)
+SmartButton::SmartButton(bool *isPressedFlag): SmartButton(-1, SmartButton::InputType::NORMAL_HIGH, NULL, isPressedFlag, NULL)
 {
     
 }
 
-void SmartButton::begin(SmartButton::EventCallback eventCallback)
+SmartButton::SmartButton(SmartButton::IsPressedHandler isPressed): SmartButton(-1, SmartButton::InputType::NORMAL_HIGH, isPressed, NULL, NULL)
 {
-    this->eventCallback = eventCallback;
+    
+}
+
+SmartButton::SmartButton(int pin, SmartButton::InputType inputType): SmartButton(pin, inputType, NULL, NULL, NULL)
+{
+    
+}
+
+void SmartButton::begin(void *context)
+{
+    this->context = context;
 
     this->debounceTick = 0;
     this->pressTick = 0;
@@ -46,6 +61,12 @@ void SmartButton::begin(SmartButton::EventCallback eventCallback)
 
     this->next = _smartButtons;
     _smartButtons = this;
+}
+
+void SmartButton::begin(SmartButton::EventCallback eventCallback, void *context)
+{
+    this->eventCallback = eventCallback;
+    this->begin(context);
 }
 
 void SmartButton::end()
@@ -77,6 +98,11 @@ bool SmartButton::isPressedDebounced()
     return this->pressedFlag;
 }
 
+void* SmartButton::getContext()
+{
+    return this->context;
+}
+
 bool SmartButton::getInputState()
 {
     bool s;
@@ -87,8 +113,23 @@ bool SmartButton::getInputState()
         } else {
             return s;
         }
-    } else {
+    } else if (this->isPressedHandler != NULL) {
         return this->isPressedHandler(this);
+    } else if (this->isPressedFlag != NULL) {
+        return *this->isPressedFlag;
+    } else if (this->interface != NULL) {
+        return this->interface->isPressed(this);
+    } else {
+        return false;
+    }
+}
+
+void SmartButton::callEvent(SmartButton::Event event)
+{
+    if (this->eventCallback != NULL) {
+        this->eventCallback(this, event, this->clickCounter);
+    } else if (this->interface != NULL) {
+        this->interface->event(this, event, this->clickCounter);
     }
 }
 
@@ -99,7 +140,7 @@ void SmartButton::debounce()
     } else if (getTickValue() - this->debounceTick >= this->debounceTimeout) {
         this->debounceTick = getTickValue();
         this->pressedFlag = !this->pressedFlag;
-        this->eventCallback(this, (this->pressedFlag != false) ? SmartButton::Event::PRESSED : SmartButton::Event::RELEASED, this->clickCounter);
+        this->callEvent((this->pressedFlag != false) ? SmartButton::Event::PRESSED : SmartButton::Event::RELEASED);
     }
 }
 
@@ -111,7 +152,7 @@ void SmartButton::process()
     case SmartButton::State::RELEASED:
         if (this->pressedFlag == false) {
             if ((this->clickCounter != 0) && (getTickValue() - this->pressTick > this->clickTimeout)) {
-                this->eventCallback(this, SmartButton::Event::CLICK, this->clickCounter);
+                this->callEvent(SmartButton::Event::CLICK);
                 this->clickCounter = 0;
             }
             break;
@@ -127,7 +168,7 @@ void SmartButton::process()
         }
         if (getTickValue() - this->pressTick < this->holdTimeout)
             break;
-        this->eventCallback(this, SmartButton::Event::HOLD, this->clickCounter);
+        this->callEvent(SmartButton::Event::HOLD);
         this->pressTick = getTickValue();
         this->state = SmartButton::State::HOLD;
         break;
@@ -139,7 +180,7 @@ void SmartButton::process()
         }
         if (getTickValue() - this->pressTick < this->longHoldTimeout)
             break;
-        this->eventCallback(this, SmartButton::Event::LONG_HOLD, this->clickCounter);
+        this->callEvent(SmartButton::Event::LONG_HOLD);
         this->pressTick = getTickValue();
         this->state = SmartButton::State::LONG_HOLD;
         break;

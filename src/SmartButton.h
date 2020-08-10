@@ -5,6 +5,8 @@
 
 namespace smartbutton {
 
+class SmartButtonInterface;
+
 class SmartButton {
 
 public:
@@ -33,37 +35,48 @@ public:
 
     explicit SmartButton(int pin, SmartButton::InputType inputType = SmartButton::InputType::NORMAL_HIGH);
     explicit SmartButton(SmartButton::IsPressedHandler isPressedHandler);
+    explicit SmartButton(bool *isPressedFlag);
+    explicit SmartButton(SmartButtonInterface *interface);
 
     SmartButton::State getState(void);
     bool isPressedDebounced(void);
 
-    void begin(SmartButton::EventCallback eventCallback);
+    void begin(SmartButton::EventCallback eventCallback, void *context = NULL);
+    void begin(void *context = NULL);
     void end();
 
-    static void service();
+    void* getContext();
 
-private:
-    SmartButton() = delete;
-    SmartButton(const SmartButton&) = delete;
-    SmartButton& operator=(const SmartButton&) = delete;
+    void process();
+    static void service();
 
     SmartButton(
         int pin,
         SmartButton::InputType inputType,
         SmartButton::IsPressedHandler isPressedHandler,
+        bool *isPressedFlag,
+        SmartButtonInterface *interface,
         unsigned long debounceTimeout = DEFAULT_DEBOUNCE_TIMEOUT,
         unsigned long clickTimeout = DEFAULT_CLICK_TIMEOUT,
         unsigned long holdTimeout = DEFAULT_HOLD_TIMEOUT,
         unsigned long longHoldTimeout = DEFAULT_LONG_HOLD_TIMEOUT
     );
 
-    void process();
+private:
+    SmartButton() = delete;
+    SmartButton(const SmartButton&) = delete;
+    SmartButton& operator=(const SmartButton&) = delete;
+
     void debounce();
+    void callEvent(SmartButton::Event event);
 
     bool getInputState();
 
+    bool *isPressedFlag;
+    SmartButtonInterface *interface;
     SmartButton::IsPressedHandler isPressedHandler;
     SmartButton::EventCallback eventCallback;
+    void *context;
 
     const unsigned long debounceTimeout;
     const unsigned long clickTimeout;
@@ -82,6 +95,14 @@ private:
     SmartButton::State state;
 
     SmartButton *next;
+};
+
+class SmartButtonInterface {
+
+public:
+    virtual bool isPressed(SmartButton *button) = 0;
+    virtual void event(SmartButton *button, SmartButton::Event event, int clickCounter) = 0;
+
 };
 
 extern SmartButton *_smartButtons;
