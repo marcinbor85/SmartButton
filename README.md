@@ -24,6 +24,8 @@ port to different architecture.
 
 ### 2020.08.10 - 0.2.0
 - [x] optional initialization by object-interface added
+- [x] optional initialization by bool-pointer added
+- [x] optional context passing added
 
 ## Example
 
@@ -31,29 +33,12 @@ Single and double click example:
 
 ```cpp
 #include <Arduino.h>
-
 #include <SmartButton.h>
 
 constexpr int BUTTON_PIN = 2;
 constexpr int LED_PIN = 13;
 
 using namespace smartbutton;
-
-void eventCallback(SmartButton *button, SmartButton::Event event, int clickCounter)
-{
-    if (event == SmartButton::Event::CLICK) {   // Click event handler
-        switch (clickCounter) {
-        case 1:
-            digitalWrite(LED_PIN, LOW);         // Single click will turn led off
-            break;
-        case 2:
-            digitalWrite(LED_PIN, HIGH);        // Double click will turn led on
-            break;
-        default:
-            break;
-        }
-    }
-}
 
 SmartButton button(BUTTON_PIN, SmartButton::InputType::NORMAL_HIGH);
 
@@ -62,7 +47,17 @@ void setup()
     pinMode(LED_PIN, OUTPUT);           // Digital output for led
     pinMode(BUTTON_PIN, INPUT_PULLUP);  // Digital input with pull-up resistors (normal high)
 
-    button.begin(eventCallback);        // Initialize and register smart button
+    // Initialize and register smart button
+    button.begin([] (SmartButton *button, SmartButton::Event event, int clickCounter)
+    {
+        if (event == SmartButton::Event::CLICK) {   // Click event handler
+            if (clickCounter == 1) {
+                digitalWrite(LED_PIN, LOW);         // Single click will turn led off
+            } else if (clickCounter == 2) {
+                digitalWrite(LED_PIN, HIGH);        // Double click will turn led on
+            }
+        }
+    });
 }
 
 void loop()
