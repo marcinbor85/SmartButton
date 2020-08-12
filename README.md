@@ -13,8 +13,17 @@ port to different architecture.
 * support multi-click events
 * support press and release events
 * support hold and long-hold events
+* support auto-repeat events during hold and long-hold
 * build-in debounce algorithm
 * configurable timeouts
+
+## Changelog
+
+### 2020.08.12 - 0.3.0
+- [x] hold auto-repeat periodic events added
+
+### 2020.08.12 - 0.2.0
+- [x] optional initialization by object-interface added
 
 ## Example
 

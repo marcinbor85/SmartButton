@@ -13,7 +13,9 @@ SmartButton::SmartButton(
     unsigned long debounceTimeout,
     unsigned long clickTimeout,
     unsigned long holdTimeout,
-    unsigned long longHoldTimeout):
+    unsigned long longHoldTimeout,
+    unsigned long holdRepeatPeriod,
+    unsigned long longHoldRepeatPeriod):
         pin(pin),
         inputType(inputType),
         isPressedHandler(isPressedHandler),
@@ -23,6 +25,8 @@ SmartButton::SmartButton(
         clickTimeout(clickTimeout),
         holdTimeout(holdTimeout),
         longHoldTimeout(longHoldTimeout),
+        holdRepeatPeriod(holdRepeatPeriod),
+        longHoldRepeatPeriod(longHoldRepeatPeriod),
         eventCallback(NULL)
 {
 
@@ -170,6 +174,7 @@ void SmartButton::process()
             break;
         this->callEvent(SmartButton::Event::HOLD);
         this->pressTick = getTickValue();
+        this->repeatTick = getTickValue();
         this->state = SmartButton::State::HOLD;
         break;
     case SmartButton::State::HOLD:
@@ -178,10 +183,16 @@ void SmartButton::process()
             this->clickCounter = 0;
             break;
         }
-        if (getTickValue() - this->pressTick < this->longHoldTimeout)
+        if (getTickValue() - this->pressTick < this->longHoldTimeout) {
+            if (getTickValue() - this->repeatTick < this->holdRepeatPeriod)
+                break;
+            this->callEvent(SmartButton::Event::HOLD_REPEAT);
+            this->repeatTick = getTickValue();
             break;
+        }
         this->callEvent(SmartButton::Event::LONG_HOLD);
         this->pressTick = getTickValue();
+        this->repeatTick = getTickValue();
         this->state = SmartButton::State::LONG_HOLD;
         break;
     case SmartButton::State::LONG_HOLD:
@@ -189,6 +200,10 @@ void SmartButton::process()
             this->state = SmartButton::State::RELEASED;
             this->clickCounter = 0;
         }
+        if (getTickValue() - this->repeatTick < this->longHoldRepeatPeriod)
+            break;
+        this->callEvent(SmartButton::Event::LONG_HOLD_REPEAT);
+        this->repeatTick = getTickValue();
         break;
     }
 }

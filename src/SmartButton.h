@@ -22,7 +22,9 @@ public:
         PRESSED,
         CLICK,
         HOLD,
+        HOLD_REPEAT,
         LONG_HOLD,
+        LONG_HOLD_REPEAT
     };
 
     enum class InputType {
@@ -59,7 +61,9 @@ public:
         unsigned long debounceTimeout = DEFAULT_DEBOUNCE_TIMEOUT,
         unsigned long clickTimeout = DEFAULT_CLICK_TIMEOUT,
         unsigned long holdTimeout = DEFAULT_HOLD_TIMEOUT,
-        unsigned long longHoldTimeout = DEFAULT_LONG_HOLD_TIMEOUT
+        unsigned long longHoldTimeout = DEFAULT_LONG_HOLD_TIMEOUT,
+        unsigned long holdRepeatPeriod = DEFAULT_HOLD_REPEAT_PERIOD,
+        unsigned long longHoldRepeatPeriod = DEFAULT_LONG_HOLD_REPEAT_PERIOD
     );
 
 private:
@@ -82,12 +86,15 @@ private:
     const unsigned long clickTimeout;
     const unsigned long holdTimeout;
     const unsigned long longHoldTimeout;
+    const unsigned long holdRepeatPeriod;
+    const unsigned long longHoldRepeatPeriod;
 
     const int pin;
     const SmartButton::InputType inputType;
 
     unsigned long pressTick;
     unsigned long debounceTick;
+    unsigned long repeatTick;
 
     bool pressedFlag;
 
