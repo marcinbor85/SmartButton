@@ -28,5 +28,5 @@ void setup()
 
 void loop()
 {
-    SmartButton::service();             // Asynchronous service routine, should be called periodically
+    SmartButton::service();   // Asynchronous service routine, should be called periodically
 }
