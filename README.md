@@ -22,7 +22,7 @@ port to different architecture.
 ### 2020.08.12 - 0.3.0
 - [x] hold auto-repeat periodic events added
 
-### 2020.08.12 - 0.2.0
+### 2020.08.10 - 0.2.0
 - [x] optional initialization by object-interface added
 
 ## Example
